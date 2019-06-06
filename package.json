@@ -36,6 +36,8 @@
     "axios-mock-adapter": "^1.16.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.13.2",
-    "lodash.debounce": "^4.0.8"
+    "lodash.debounce": "^4.0.8",
+    "react-hooks-testing-library": "^0.5.1",
+    "react-test-renderer": "^16.8.6"
   }
 }
