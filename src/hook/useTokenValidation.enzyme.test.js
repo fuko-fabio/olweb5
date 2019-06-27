@@ -10,8 +10,7 @@ import {TokenValidationStatus} from "../constants/TokenValidationStatus";
 const axiosMock = new MockAdapter(axios);
 
 const HookWrapper = ({ hook }) => {
-    const hookResult = hook ? hook() : undefined;
-    return <div hook={hookResult} />;
+    return <div hook={hook()} />;
 };
 
 const validateUrl = "/validate/token";
@@ -19,37 +18,36 @@ const token = "randomString";
 const fullValidateUrl = `${validateUrl}/${token}`;
 
 const setup = () => {
-    const props = { validateUrl, token };
-    const wrapper = mount(<HookWrapper hook={() => useTokenValidation(props)} />);
+    const wrapper = mount(<HookWrapper hook={() => useTokenValidation({ validateUrl, token })} />);
 
-    const getHookResult = () => {
+    const getResult = () => {
         wrapper.update();
         return wrapper.find("div").props().hook;
     };
 
-    return { wrapper, getHookResult };
+    return { wrapper, getResult };
 };
 
 describe('useTokenValidation', () => {
     it('should validate token with success', async () => {
         axiosMock.onGet(fullValidateUrl).replyOnce(200);
-        const { getHookResult } = setup();
+        const { getResult } = setup();
 
-        expect(getHookResult()).toEqual([TokenValidationStatus.Validating]);
+        expect(getResult()).toEqual([TokenValidationStatus.Validating]);
 
         await asyncTasks();
 
-        expect(getHookResult()).toEqual([TokenValidationStatus.Success]);
+        expect(getResult()).toEqual([TokenValidationStatus.Success]);
     });
 
     it('should fails with validation', async () => {
         axiosMock.onGet(fullValidateUrl).replyOnce(404);
-        const { getHookResult } = setup();
+        const { getResult } = setup();
 
-        expect(getHookResult()).toEqual([TokenValidationStatus.Validating]);
+        expect(getResult()).toEqual([TokenValidationStatus.Validating]);
 
         await asyncTasks();
 
-        expect(getHookResult()).toEqual([TokenValidationStatus.Error]);
+        expect(getResult()).toEqual([TokenValidationStatus.Error]);
     });
 });
